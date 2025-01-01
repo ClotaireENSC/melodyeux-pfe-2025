@@ -17,14 +17,14 @@ export default function App() {
   const onSwipeLeft = () => {
     if (currentScreen === 'Home') {
       setCurrentScreen('List');
-    } else if (currentScreen === 'Button') {
+    } else if (currentScreen === 'Imports') {
       setCurrentScreen('Home');
     }
   };
 
   const onSwipeRight = () => {
     if (currentScreen === 'Home') {
-      setCurrentScreen('Button');
+      setCurrentScreen('Imports');
     } else if (currentScreen === 'List') {
       setCurrentScreen('Home');
     }
@@ -35,7 +35,7 @@ export default function App() {
     ScreenComponent = HomeScreen;
   } else if (currentScreen === 'List') {
     ScreenComponent = ListScreen;
-  } else if (currentScreen === 'Button') {
+  } else if (currentScreen === 'Imports') {
     ScreenComponent = ButtonScreen;
   }
 
