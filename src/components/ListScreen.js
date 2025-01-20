@@ -49,12 +49,15 @@ export default function ListScreen() {
         await sound.playAsync();
     };
 
-    const renderItem = ({ item }) => (
-        // <TouchableOpacity style={styles.item} onPress={() => playMidi(item.content)}>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SoundDetail')}>
-            <Text>{item.name}</Text>
-        </TouchableOpacity>
-    );
+    const renderItem = function( item, index ) {
+        // console.log(item.item.content.tracks[3]);
+        return (
+            // <TouchableOpacity style={styles.item} onPress={() => playMidi(item.content)}>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SoundDetail', { item })}>
+                <Text>{item.item.name} [{item.index}]</Text>
+            </TouchableOpacity>
+        );
+    } 
 
     return (
         <View style={styles.container}>
