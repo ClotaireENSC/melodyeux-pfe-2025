@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ListScreen() {
+    const navigation = useNavigation();
     const [files, setFiles] = useState([]);
 
     useEffect(() => {
@@ -23,10 +25,21 @@ export default function ListScreen() {
         loadFiles();
     }, []);
 
+    // Fonction pour vider le AsyncStorage
+    // const clearAsyncStorage = async () => {
+    //     try {
+    //         await AsyncStorage.clear();
+    //         console.log('AsyncStorage vidé avec succès');
+    //     } catch (error) {
+    //         console.error('Erreur lors du vidage de AsyncStorage', error);
+    //     }
+    // };
+    // clearAsyncStorage();
+
     const logMidiFiles = (files) => {
         console.log('MIDI Files JSON:', JSON.stringify(files, null, 2));
     };
-
+    // logMidiFiles(files);
     const playMidi = async (midiJson) => {
         // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
         // For simplicity, let's assume you have a URL to an audio file
@@ -37,7 +50,8 @@ export default function ListScreen() {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.item} onPress={() => playMidi(item.content)}>
+        // <TouchableOpacity style={styles.item} onPress={() => playMidi(item.content)}>
+        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SoundDetail')}>
             <Text>{item.name}</Text>
         </TouchableOpacity>
     );
