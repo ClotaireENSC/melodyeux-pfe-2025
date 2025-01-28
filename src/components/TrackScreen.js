@@ -25,9 +25,8 @@ export default function SoundDetailScreen({route}) {
         
         return (
             <View style={styles.trackRow}>
-                <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.notes?.[0]).map(i => (i + ";"))}</Text>
-                {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text> */}
-                {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.length} notes</Text> */}
+                {/* <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.instrument.name[0]).map(i => (i + ";"))}</Text> */}
+                <Text style={styles.trackText}>Track {index + 1}: {item.notes.length} notes</Text>
             </View>
         );
     };

@@ -24,6 +24,8 @@ export default function App() {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
       navigationRef.current.navigate('List');
+    } else if (currentRoute === 'Imports') {
+      navigationRef.current.navigate('Home');
     }
   };
 
@@ -53,6 +55,7 @@ export default function App() {
           <Stack.Screen name="List" component={ListScreen} />
           <Stack.Screen name="Imports" component={ButtonScreen} />
           <Stack.Screen name="SoundDetail" component={SoundDetailScreen} />
+          <Stack.Screen name="TrackScreen" component={SoundDetailScreen} />
         </Stack.Navigator>
       </GestureRecognizer>
     </NavigationContainer>
