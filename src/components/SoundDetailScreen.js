@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Audio } from 'expo-av';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { getBatchedNotes } from '../utils/tracksManager';
+import { batchesToChords } from '../utils/batch_to_chord';
 
-export default function SoundDetailScreen({route}) {
+export default function SoundDetailScreen({ route }) {
     const { item } = route.params.item;
-    
+
     const playMidi = async (midiJson) => {
         // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
         // For simplicity, let's assume you have a URL to an audio file
@@ -14,7 +16,7 @@ export default function SoundDetailScreen({route}) {
         await sound.playAsync();
     };
 
-    const renderTrack = function({ item, index }) {
+    const renderTrack = function ({ item, index }) {
         const notes = item?.notes?.map(note => {
             return {
                 name: note?.name,
@@ -22,15 +24,20 @@ export default function SoundDetailScreen({route}) {
             };
         });
         // console.log(notes);
-        
+
         return (
             <View style={styles.trackRow}>
-                <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.notes?.[0]).map(i => (i + ";"))}</Text>
+                {/* <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.notes?.[0]).map(i => (i + ";"))}</Text> */}
                 {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text> */}
                 {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.length} notes</Text> */}
             </View>
         );
     };
+
+    const batches = getBatchedNotes(item);
+    // console.log(batches);
+    const chords = batchesToChords(batches);
+    console.log(chords);
 
     return (
         <View style={styles.container}>

@@ -66,3 +66,11 @@ console.log("----");
 batches.map(batch => {
     console.log(batchToChord(extractPitches(batch)));
 });
+
+const batchesToChords = (batches) => {
+    return batches.map(batch => {
+        return batchToChord(extractPitches(batch));
+    });
+};
+
+export { batchesToChords };
