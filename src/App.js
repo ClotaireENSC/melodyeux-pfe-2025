@@ -18,10 +18,8 @@ export default function App() {
   const onSwipeLeft = () => {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
-      speak('List');
       navigationRef.current.navigate('List');
     } else if (currentRoute === 'Imports') {
-      speak('Home');
       navigationRef.current.navigate('Home');
     }
   };
@@ -29,15 +27,13 @@ export default function App() {
   const onSwipeRight = () => {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
-      speak('Imports');
       navigationRef.current.navigate('Imports');
     } else if (currentRoute === 'List') {
-      speak('Home');
       navigationRef.current.navigate('Home');
     } else if (currentRoute === 'SoundDetail') {
-      speak('List');
       navigationRef.current.navigate('List');
     }
+    speak(currentRoute);
   };
 
   const gestureConfig = {

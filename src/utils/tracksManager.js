@@ -1,6 +1,6 @@
 const getBatchedNotes = function (item) {
     const tracks = item.content.tracks;
-    const ppq = item.content.header.ppq;
+    const ppq = item.content.header.ppq * 4 / item.content.header.timeSignatures[0].timeSignature[1];
     const eotts = tracks.map(track => track.endOfTrackTicks);
 
     const eott = eotts.filter(eott => eott !== undefined)[0];
