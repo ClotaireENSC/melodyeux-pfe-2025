@@ -5,7 +5,7 @@ import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 
 export default function SoundDetailScreen({ route }) {
-    const { item } = route.params.item;
+    const { item } = route.params;
 
     const playMidi = async (midiJson) => {
         // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)

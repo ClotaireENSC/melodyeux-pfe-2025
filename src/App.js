@@ -4,7 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import * as Speech from 'expo-speech';
+import speak from './utils/speechHandler';
 import HomeScreen from './components/HomeScreen';
 import ListScreen from './components/ListScreen';
 import ButtonScreen from './components/ButtonScreen';
@@ -14,13 +14,14 @@ const Stack = createStackNavigator();
 
 export default function App() {
   const navigationRef = React.useRef();
-  const [currentScreen, setCurrentScreen] = React.useState('Home');
 
   const onSwipeLeft = () => {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
+      speak('List');
       navigationRef.current.navigate('List');
     } else if (currentRoute === 'Imports') {
+      speak('Home');
       navigationRef.current.navigate('Home');
     }
   };
@@ -28,10 +29,13 @@ export default function App() {
   const onSwipeRight = () => {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
+      speak('Imports');
       navigationRef.current.navigate('Imports');
     } else if (currentRoute === 'List') {
+      speak('Home');
       navigationRef.current.navigate('Home');
     } else if (currentRoute === 'SoundDetail') {
+      speak('List');
       navigationRef.current.navigate('List');
     }
   };
