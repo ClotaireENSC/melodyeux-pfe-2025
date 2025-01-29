@@ -34,10 +34,10 @@ export default function SoundDetailScreen({ route }) {
         );
     };
 
-    const batches = getBatchesInfo(item);
-    console.log(batches.timeSignature);
-    const chords = batchesToChords(batches.beats);
-    console.log(chords);
+    // const batches = getBatchesInfo(item);
+    // console.log(batches.timeSignature);
+    // const chords = batchesToChords(batches.beats);
+    // console.log(chords);
 
     return (
         <View style={styles.container}>

@@ -19,8 +19,10 @@ export default function App() {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
       navigationRef.current.navigate('List');
+      speak('List');
     } else if (currentRoute === 'Imports') {
       navigationRef.current.navigate('Home');
+      speak('Home');
     }
   };
 
@@ -28,12 +30,14 @@ export default function App() {
     const currentRoute = navigationRef.current.getCurrentRoute().name;
     if (currentRoute === 'Home') {
       navigationRef.current.navigate('Imports');
+      speak('Imports');
     } else if (currentRoute === 'List') {
       navigationRef.current.navigate('Home');
+      speak('Home');
     } else if (currentRoute === 'SoundDetail') {
       navigationRef.current.navigate('List');
+      speak('List');
     }
-    speak(currentRoute);
   };
 
   const gestureConfig = {
