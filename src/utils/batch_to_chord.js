@@ -77,6 +77,10 @@ function batchToMostFrequentNotes(batch) {
 function mostFrequentNotesToChord(notes) {
     ///// The chord is one of the keys of known_chords /////
 
+    if (notes.length === 0) {
+        return "silence";
+    }
+
     // We first sort the notes
     notes = notes.sort();
     similarities = [];
@@ -148,13 +152,16 @@ function batchesToChords(batches, timeSignature = [4, 4]) {
     return {
         beatsPerChord: beatsPerChord,
         chords: newBatches.map(batch => {
-            console.log("batch", batch);
+            // console.log("batch", batch);
             const pitches = extractPitches(batch);
-            console.log("pitches", pitches);
+            // console.log("pitches", pitches);
             const mostFrequentNotes = batchToMostFrequentNotes(pitches);
-            console.log("mostFrequentNotes", mostFrequentNotes);
+            // console.log("mostFrequentNotes", mostFrequentNotes);
             const chord = mostFrequentNotesToChord(mostFrequentNotes.notes);
-            console.log("chord", chord);
+            // console.log("chord", chord);
+            if (chord === "silence") {
+                return { chord: chord, velocity: -1 };
+            }
             return { chord: chord, velocity: mostFrequentNotes.velocity };
         })
     }
@@ -171,4 +178,4 @@ const batches = Array.from({ length: 10 }, generateRandomBatch);
 // console.log("----");
 // console.log(batchesToChords(batches));
 batchesToChords(batches);
-// export { batchesToChords };
+export { batchesToChords };
