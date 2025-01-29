@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Audio } from 'expo-av';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { getBatchedNotes } from '../utils/tracksManager';
+import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 
 export default function SoundDetailScreen({ route }) {
@@ -34,9 +34,9 @@ export default function SoundDetailScreen({ route }) {
         );
     };
 
-    const batches = getBatchedNotes(item);
-    // console.log(batches);
-    const chords = batchesToChords(batches);
+    const batches = getBatchesInfo(item);
+    console.log(batches.timeSignature);
+    const chords = batchesToChords(batches.beats);
     console.log(chords);
 
     return (
