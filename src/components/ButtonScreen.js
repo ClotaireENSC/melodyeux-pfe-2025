@@ -7,7 +7,7 @@ import { Midi } from '@tonejs/midi';
 export default function ButtonScreen() {
     const pickDocument = async () => {
         try {
-            let result = await DocumentPicker.getDocumentAsync({ type: 'audio/midi' });
+            let result = await DocumentPicker.getDocumentAsync({ type: 'audio/*' });
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 // Read the file content

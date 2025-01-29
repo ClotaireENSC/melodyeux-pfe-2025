@@ -28,16 +28,16 @@ export default function SoundDetailScreen({ route }) {
         return (
             <View style={styles.trackRow}>
                 {/* <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.notes?.[0]).map(i => (i + ";"))}</Text> */}
-                {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text> */}
+                <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text>
                 {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.length} notes</Text> */}
             </View>
         );
     };
 
-    const batches = getBatchedNotes(item);
+    // const batches = getBatchedNotes(item);
     // console.log(batches);
-    const chords = batchesToChords(batches);
-    console.log(chords);
+    // const chords = batchesToChords(batches);
+    // console.log(chords);
 
     return (
         <View style={styles.container}>
@@ -49,11 +49,12 @@ export default function SoundDetailScreen({ route }) {
                 contentContainerStyle={styles.trackList}
             />
             <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[0].bpm} à {item.content.header.tempos[0].ticks} ticks</Text>
+            <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[0].bpm} à {item.content.header.tempos[0].ticks} ticks</Text>
             {/* <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[1].bpm} à {item.content.header.tempos[1].ticks} ticks</Text>
             <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[2].bpm} à {item.content.header.tempos[2].ticks} ticks</Text> */}
             <Text style={styles.trackText}>PPQ : {item.content.header.ppq}</Text>
             <Text style={styles.trackText}>EoTT : {item.content.tracks[0].endOfTrackTicks}</Text>
-            <Text style={styles.trackText}>EoTT : {item.content.tracks[1].endOfTrackTicks}</Text>
+            {/* <Text style={styles.trackText}>EoTT : {item.content.tracks[1].endOfTrackTicks}</Text> */}
             {/* <Text style={styles.trackText}>PPQ : {Object.keys(item.content.tracks[0].endOfTrackTicks).map(i => (i + ";"))}</Text> */}
             <TouchableOpacity style={styles.playButton} onPress={() => playMidi(item.content)}>
                 <Text style={styles.playButtonText}>Play</Text>
