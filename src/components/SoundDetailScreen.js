@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Audio } from 'expo-av';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { getBatchedNotes } from '../utils/tracksManager';
+import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 
 export default function SoundDetailScreen({ route }) {
-    const { item } = route.params.item;
+    const { item } = route.params;
 
     const playMidi = async (midiJson) => {
         // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
@@ -34,10 +34,10 @@ export default function SoundDetailScreen({ route }) {
         );
     };
 
-    // const batches = getBatchedNotes(item);
-    // console.log(batches);
-    // const chords = batchesToChords(batches);
-    // console.log(chords);
+    const batches = getBatchesInfo(item);
+    console.log(batches.timeSignature);
+    const chords = batchesToChords(batches.beats);
+    console.log(chords);
 
     return (
         <View style={styles.container}>

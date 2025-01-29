@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +15,6 @@ export default function ListScreen() {
                 if (storedFiles) {
                     const parsedFiles = JSON.parse(storedFiles);
                     setFiles(parsedFiles);
-                    // logMidiFiles(parsedFiles);
                 }
             } catch (error) {
                 console.error('Error loading files', error);
@@ -25,39 +24,19 @@ export default function ListScreen() {
         loadFiles();
     }, []);
 
-    // Fonction pour vider le AsyncStorage
-    // const clearAsyncStorage = async () => {
-    //     try {
-    //         await AsyncStorage.clear();
-    //         console.log('AsyncStorage vidé avec succès');
-    //     } catch (error) {
-    //         console.error('Erreur lors du vidage de AsyncStorage', error);
-    //     }
-    // };
-    // clearAsyncStorage();
-
-    const logMidiFiles = (files) => {
-        console.log('MIDI Files JSON:', JSON.stringify(files, null, 2));
-    };
-    // logMidiFiles(files);
     const playMidi = async (midiJson) => {
-        // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
-        // For simplicity, let's assume you have a URL to an audio file
         const audioUri = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-
         const { sound } = await Audio.Sound.createAsync({ uri: audioUri });
         await sound.playAsync();
     };
 
-    const renderItem = function( item, index ) {
-        // console.log(item.item.content.tracks[3]);
+    const renderItem = ({ item, index }) => {
         return (
-            // <TouchableOpacity style={styles.item} onPress={() => playMidi(item.content)}>
             <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('SoundDetail', { item })}>
-                <Text>{item.item.name} [{item.index}]</Text>
+                <Text style={styles.itemText}>{item.name} [{index}]</Text>
             </TouchableOpacity>
         );
-    } 
+    };
 
     return (
         <View style={styles.container}>
@@ -66,28 +45,32 @@ export default function ListScreen() {
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 contentContainerStyle={styles.list}
+                showsVerticalScrollIndicator={false}
+                pagingEnabled
             />
         </View>
     );
 }
 
+const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f9fa',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
     },
     list: {
         flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     item: {
-        padding: 10,
+        height: height,
+        justifyContent: 'center',
+        alignItems: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        alignItems: 'center',
+    },
+    itemText: {
+        fontSize: 24,
+        fontWeight: 'bold',
     },
 });
