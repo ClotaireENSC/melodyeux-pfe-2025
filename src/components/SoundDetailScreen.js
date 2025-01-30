@@ -12,7 +12,7 @@ export default function SoundDetailScreen({ route, navigation }) {
     const [nextChord, setNextChord] = useState(null);
     const progress = useRef(new Animated.Value(0)).current;
     const { speechMode } = useContext(SpeechModeContext);
-    const { listenMusic } = useContext(ListenMusicContext);
+    const { listenMusic, setListenMusic } = useContext(ListenMusicContext);
     const timeouts = useRef([]);
 
     useEffect(() => {
@@ -25,8 +25,9 @@ export default function SoundDetailScreen({ route, navigation }) {
             setNextChord(null);
             // Stop any ongoing animations
             progress.stopAnimation();
+            setListenMusic(true);
         };
-    }, [speechMode]);
+    }, [speechMode, listenMusic]);
 
     const playChords = (chords) => {
         const bpm = Math.floor(item.content.header.tempos[0].bpm);
@@ -36,18 +37,12 @@ export default function SoundDetailScreen({ route, navigation }) {
         stopTalking();
 
         chords.chords.forEach((chord, index) => {
-            if (!listenMusic) {
-                return; // Exit the function if listenMusic is false
-            }
 
             const timeout = setTimeout(() => {
-                if (!listenMusic) {
-                    return; // Exit the function if listenMusic is false
-                }
 
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
-                sing(chord.chord, 1);
+                sing(chord, 1);
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,
