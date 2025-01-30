@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
+import { ListenMusicContext } from '../utils/ListenMusicContext';
 
 export default function ListScreen() {
     const navigation = useNavigation();
     const [files, setFiles] = useState([]);
+    const { setListenMusic } = useContext(ListenMusicContext);
 
     useEffect(() => {
         const loadFiles = async () => {
@@ -22,13 +24,10 @@ export default function ListScreen() {
         };
 
         loadFiles();
-    }, []);
 
-    const playMidi = async (midiJson) => {
-        const audioUri = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-        const { sound } = await Audio.Sound.createAsync({ uri: audioUri });
-        await sound.playAsync();
-    };
+        // Set listenMusic to false when the component is mounted
+        setListenMusic(false);
+    }, [setListenMusic]);
 
     const renderItem = ({ item, index }) => {
         return (

@@ -4,13 +4,15 @@ import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 import { sing, inform, stopTalking } from '../utils/speechHandler';
 import { SpeechModeContext } from '../utils/SpeechModeContext';
+import { ListenMusicContext } from '../utils/ListenMusicContext';
 
 export default function SoundDetailScreen({ route, navigation }) {
     const { item } = route.params;
     const [currentChord, setCurrentChord] = useState(null);
     const [nextChord, setNextChord] = useState(null);
     const progress = useRef(new Animated.Value(0)).current;
-    const { speechMode, setSpeechMode } = useContext(SpeechModeContext);
+    const { speechMode } = useContext(SpeechModeContext);
+    const { listenMusic } = useContext(ListenMusicContext);
     const timeouts = useRef([]);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export default function SoundDetailScreen({ route, navigation }) {
             // Stop any ongoing animations
             progress.stopAnimation();
         };
-    }, []);
+    }, [speechMode]);
 
     const playChords = (chords) => {
         const bpm = Math.floor(item.content.header.tempos[0].bpm);
@@ -32,12 +34,20 @@ export default function SoundDetailScreen({ route, navigation }) {
         const beatTime = 60 / bpm;
         const chordTime = beatTime * beatsPerChord;
         stopTalking();
-        console.log(chordTime)
+
         chords.chords.forEach((chord, index) => {
+            if (!listenMusic) {
+                return; // Exit the function if listenMusic is false
+            }
+
             const timeout = setTimeout(() => {
+                if (!listenMusic) {
+                    return; // Exit the function if listenMusic is false
+                }
+
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
-                sing(chord, 1 / chordTime);
+                sing(chord.chord, 1);
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,

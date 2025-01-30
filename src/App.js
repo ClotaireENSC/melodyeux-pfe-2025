@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import { inform } from './utils/speechHandler';
 import { SpeechModeProvider, SpeechModeContext } from './utils/SpeechModeContext';
+import { ListenMusicProvider, ListenMusicContext } from './utils/ListenMusicContext';
 import HomeScreen from './components/HomeScreen';
 import ListScreen from './components/ListScreen';
 import ButtonScreen from './components/ButtonScreen';
@@ -15,6 +16,7 @@ const Stack = createStackNavigator();
 function App() {
   const navigationRef = useRef();
   const { speechMode, setSpeechMode } = useContext(SpeechModeContext);
+  const { listenMusic, setListenMusic } = useContext(ListenMusicContext);
   const [longPressFeedback, setLongPressFeedback] = useState(false);
 
   const onSwipeLeft = () => {
@@ -83,7 +85,9 @@ function App() {
 export default function Main() {
   return (
     <SpeechModeProvider>
-      <App />
+      <ListenMusicProvider>
+        <App />
+      </ListenMusicProvider>
     </SpeechModeProvider>
   );
 }
