@@ -3,17 +3,24 @@ import { Audio } from 'expo-av';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
+import { speak } from '../utils/speechHandler';
 
 export default function SoundDetailScreen({ route }) {
     const { item } = route.params;
 
-    const playMidi = async (midiJson) => {
-        // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
-        // For simplicity, let's assume you have a URL to an audio file
-        const audioUri = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+    // const playMidi = async (midiJson) => {
+    //     // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
+    //     // For simplicity, let's assume you have a URL to an audio file
+    //     const audioUri = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
 
-        const { sound } = await Audio.Sound.createAsync({ uri: audioUri });
-        await sound.playAsync();
+    //     const { sound } = await Audio.Sound.createAsync({ uri: audioUri });
+    //     await sound.playAsync();
+    // };
+
+    const playChords = (chords) => {
+        chords.chords.map(chord => {
+            speak(chord.chord);
+        });
     };
 
     const renderTrack = function ({ item, index }) {
@@ -36,8 +43,9 @@ export default function SoundDetailScreen({ route }) {
 
     const batches = getBatchesInfo(item);
     console.log(batches.timeSignature);
-    const chords = batchesToChords(batches.beats);
+    const chords = batchesToChords(batches.beats, batches.timeSignature[0].timeSignature);
     console.log(chords.chords.map(chord => chord.chord));
+    console.log(chords.chords.length);
 
     return (
         <View style={styles.container}>
@@ -56,7 +64,7 @@ export default function SoundDetailScreen({ route }) {
             <Text style={styles.trackText}>EoTT : {item.content.tracks[0].endOfTrackTicks}</Text>
             {/* <Text style={styles.trackText}>EoTT : {item.content.tracks[1].endOfTrackTicks}</Text> */}
             {/* <Text style={styles.trackText}>PPQ : {Object.keys(item.content.tracks[0].endOfTrackTicks).map(i => (i + ";"))}</Text> */}
-            <TouchableOpacity style={styles.playButton} onPress={() => playMidi(item.content)}>
+            <TouchableOpacity style={styles.playButton} onPress={() => playChords(chords)}>
                 <Text style={styles.playButtonText}>Play</Text>
             </TouchableOpacity>
         </View>

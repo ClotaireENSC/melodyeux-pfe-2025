@@ -144,6 +144,7 @@ function batchesToChords(batches, timeSignature = [4, 4]) {
     // We create new batches with the notes grouped by beat depending on the number of beats per chord
     // Ex : beatsPerChord = 2, batches = [['C#', 'D'], ['G'], ...] => newBatches = [['C#', 'D', 'G'], ...] with half the size
     const newBatches = [];
+    console.log(beatsPerChord);
     for (let i = 0; i < batches.length; i += beatsPerChord) {
         newBatches.push(batches.slice(i, i + beatsPerChord).flat());
     }
