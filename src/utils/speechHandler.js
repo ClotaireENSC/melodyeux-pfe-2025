@@ -31,8 +31,54 @@ const inform = (page, mode = 'talkative') => {
 };
 
 const sing = (chord, rate) => {
-    Speech.speak(chord.chord, { pitch: chord.velocity, rate: rate });
+    const parsedChord = parseChord(chord.chord);
+    Speech.speak(parsedChord, { pitch: chord.velocity, rate: rate });
 };
+
+const parseChord = function (chord) {
+
+    const matches = {
+        "C": "Do",
+        "D": "Ré",
+        "E": "Mi",
+        "F": "Fa",
+        "G": "Sol",
+        "A": "La",
+        "B": "Si",
+        "#": "dièse",
+        "min": "mineur",
+        "min7": "mineur 7",
+        "maj7": "majeur 7",
+        "7": "7",
+        "m7b5": "mineur 7 b5",
+        "dim7": "dim 7",
+        "sus4": "susse 4",
+        "6": "6",
+        "2": "2",
+        "silence": "silence"
+    };
+
+    let pitch = '';
+    let type = '';
+
+    for (const [key, value] of Object.entries(matches)) {
+        if (chord.includes(key)) {
+            if (['C', 'D', 'E', 'F', 'G', 'A', 'B', '#'].includes(key)) {
+                pitch = value; // Assign directly to avoid duplicates
+            } else {
+                type = value; // Assign directly to avoid duplicates
+            }
+        }
+    }
+
+    pitch = pitch.trim();
+    type = type.trim();
+
+    const parsedChord = `${pitch} ${type}`.trim();
+
+    return parsedChord;
+}
+
 
 const stopTalking = () => {
     Speech.stop();

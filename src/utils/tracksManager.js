@@ -6,7 +6,7 @@ const getBatchedNotes = function (item) {
     const eott = eotts.filter(eott => eott !== undefined)[0];
     const nbBeats = ~~(eott / ppq);
 
-    console.log('Number of beats:', nbBeats); // Log the nbBeats value
+    // console.log('Number of beats:', nbBeats); // Log the nbBeats value
 
     const batches = new Array(nbBeats + 1).fill(null).map(() => []);
 

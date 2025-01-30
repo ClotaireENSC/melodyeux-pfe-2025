@@ -42,7 +42,7 @@ export default function SoundDetailScreen({ route, navigation }) {
 
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
-                sing(chord, 1);
+                sing(chord, 1 / chordTime);
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,
@@ -115,8 +115,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#007BFF',
-        borderRadius: 8,
-        margin: 10,
     },
     playButtonText: {
         color: '#fff',
