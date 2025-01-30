@@ -1,17 +1,29 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 import { sing, inform, stopTalking } from '../utils/speechHandler';
+import { SpeechModeContext } from '../utils/SpeechModeContext';
 
 export default function SoundDetailScreen({ route, navigation }) {
     const { item } = route.params;
     const [currentChord, setCurrentChord] = useState(null);
     const [nextChord, setNextChord] = useState(null);
     const progress = useRef(new Animated.Value(0)).current;
+    const { speechMode, setSpeechMode } = useContext(SpeechModeContext);
+    const timeouts = useRef([]);
 
     useEffect(() => {
-        inform('SoundDetail', 'talkative');
+        inform('SoundDetail', speechMode);
+        return () => {
+            // Clear all timeouts
+            timeouts.current.forEach(timeout => clearTimeout(timeout));
+            // Reset chords
+            setCurrentChord(null);
+            setNextChord(null);
+            // Stop any ongoing animations
+            progress.stopAnimation();
+        };
     }, []);
 
     const playChords = (chords) => {
@@ -20,12 +32,12 @@ export default function SoundDetailScreen({ route, navigation }) {
         const beatTime = 60 / bpm;
         const chordTime = beatTime * beatsPerChord;
         stopTalking();
-
+        console.log(chordTime)
         chords.chords.forEach((chord, index) => {
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
-                sing(chord.chord, 1);
+                sing(chord, 1 / chordTime);
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,
@@ -35,12 +47,14 @@ export default function SoundDetailScreen({ route, navigation }) {
                     progress.setValue(0);
                 });
             }, chordTime * 1000 * index);
+            timeouts.current.push(timeout);
         });
 
-        setTimeout(() => {
+        const finalTimeout = setTimeout(() => {
             setCurrentChord(null);
             setNextChord(null);
         }, chordTime * 1000 * chords.chords.length);
+        timeouts.current.push(finalTimeout);
     };
 
     const renderTrack = function ({ item, index }) {

@@ -22,8 +22,8 @@ const speechTexts = {
 
 const inform = (page, mode = 'talkative') => {
     const text = speechTexts[page] ? speechTexts[page][mode] : null;
+    Speech.stop();
     if (text) {
-        Speech.stop();
         Speech.speak(text);
     } else {
         Speech.speak(page);
@@ -31,7 +31,7 @@ const inform = (page, mode = 'talkative') => {
 };
 
 const sing = (chord, rate) => {
-    Speech.speak(chord, { rate: rate });
+    Speech.speak(chord.chord, { pitch: chord.velocity, rate: rate });
 };
 
 const stopTalking = () => {
