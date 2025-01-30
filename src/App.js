@@ -1,8 +1,7 @@
 import React, { useState, useRef, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import GestureRecognizer from 'react-native-swipe-gestures';
 import { inform } from './utils/speechHandler';
 import { SpeechModeProvider, SpeechModeContext } from './utils/SpeechModeContext';
 import { ListenMusicProvider, ListenMusicContext } from './utils/ListenMusicContext';
@@ -35,18 +34,15 @@ function App() {
     if (currentRoute === 'Home') {
       navigationRef.current.navigate('Imports');
       inform('Imports', speechMode);
-    } else if (currentRoute === 'List') {
-      navigationRef.current.navigate('Home');
-      inform('Home', speechMode);
-    } else if (currentRoute === 'SoundDetail') {
-      navigationRef.current.navigate('List');
-      inform('List', speechMode);
     }
   };
 
-  const gestureConfig = {
-    velocityThreshold: 0.3,
-    directionalOffsetThreshold: 80,
+  const handleRightClick = () => {
+    onSwipeLeft();
+  };
+
+  const handleLeftClick = () => {
+    onSwipeRight();
   };
 
   const handleLongPress = () => {
@@ -59,24 +55,19 @@ function App() {
   return (
     <NavigationContainer ref={navigationRef}>
       <View style={{ flex: 1 }}>
-        <GestureRecognizer
-          onSwipeLeft={onSwipeLeft}
-          onSwipeRight={onSwipeRight}
-          config={gestureConfig}
-          style={styles.container}
-        >
-          <TouchableWithoutFeedback onLongPress={handleLongPress}>
-            <View style={styles.container}>
-              {longPressFeedback && <Text style={styles.feedbackText}>Mode changé: {speechMode}</Text>}
-              <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen name="List" component={ListScreen} />
-                <Stack.Screen name="Imports" component={ButtonScreen} />
-                <Stack.Screen name="SoundDetail" component={SoundDetailScreen} />
-              </Stack.Navigator>
-            </View>
-          </TouchableWithoutFeedback>
-        </GestureRecognizer>
+        <TouchableOpacity style={styles.leftClickArea} onPress={handleLeftClick} />
+        <TouchableOpacity style={styles.rightClickArea} onPress={handleRightClick} />
+        <TouchableWithoutFeedback onLongPress={handleLongPress}>
+          <View style={styles.container}>
+            {longPressFeedback && <Text style={styles.feedbackText}>Mode changé: {speechMode}</Text>}
+            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="List" component={ListScreen} />
+              <Stack.Screen name="Imports" component={ButtonScreen} />
+              <Stack.Screen name="SoundDetail" component={SoundDetailScreen} />
+            </Stack.Navigator>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     </NavigationContainer>
   );
@@ -95,6 +86,22 @@ export default function Main() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  leftClickArea: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: "10%", // Ajustez la largeur selon vos besoins
+    zIndex: 1,
+  },
+  rightClickArea: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: "10%", // Ajustez la largeur selon vos besoins
+    zIndex: 1,
   },
   feedbackText: {
     position: 'absolute',

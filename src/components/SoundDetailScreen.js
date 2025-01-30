@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     karaokeText: {
-        fontSize: 90,
+        fontSize: 75,
         fontWeight: 'bold',
         color: '#007BFF',
         marginBottom: '25%',
