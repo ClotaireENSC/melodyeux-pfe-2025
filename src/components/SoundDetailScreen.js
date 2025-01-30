@@ -1,63 +1,86 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, FlatList, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
 import { sing, inform, stopTalking } from '../utils/speechHandler';
 
 export default function SoundDetailScreen({ route, navigation }) {
     const { item } = route.params;
+    const [currentChord, setCurrentChord] = useState(null);
+    const [nextChord, setNextChord] = useState(null);
+    const progress = useRef(new Animated.Value(0)).current;
 
-    inform('SoundDetail', 'talkative');
+    useEffect(() => {
+        inform('SoundDetail', 'talkative');
+    }, []);
 
     const playChords = (chords) => {
         const bpm = Math.floor(item.content.header.tempos[0].bpm);
         const beatsPerChord = chords.beatsPerChord;
         const beatTime = 60 / bpm;
         const chordTime = beatTime * beatsPerChord;
-        // play each chord
         stopTalking();
-        chords.chords.map(chord => {
-            sing(chord.chord, 1);
-            setTimeout(() => { }, chordTime * 1000);
+
+        chords.chords.forEach((chord, index) => {
+            setTimeout(() => {
+                setCurrentChord(chord.chord);
+                setNextChord(chords.chords[index + 1]?.chord || null);
+                sing(chord.chord, 1);
+                Animated.timing(progress, {
+                    toValue: 1,
+                    duration: chordTime * 1000,
+                    easing: Easing.linear,
+                    useNativeDriver: false,
+                }).start(() => {
+                    progress.setValue(0);
+                });
+            }, chordTime * 1000 * index);
         });
+
+        setTimeout(() => {
+            setCurrentChord(null);
+            setNextChord(null);
+        }, chordTime * 1000 * chords.chords.length);
     };
 
     const renderTrack = function ({ item, index }) {
-        const notes = item?.notes?.map(note => {
-            return {
-                name: note?.name,
-                time: note?.time,
-            };
-        });
-
-        return (
-            <View style={styles.trackRow}>
-                <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text>
-            </View>
-        );
+        return null;
     };
 
     const batches = getBatchesInfo(item);
-    console.log(batches.timeSignature);
     const chords = batchesToChords(batches.beats, batches.timeSignature[0].timeSignature);
-    console.log(chords.chords.map(chord => chord.chord));
-    console.log(chords.chords.length);
+
+    const progressBarWidth = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0%', '100%'],
+    });
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{item.name}</Text>
-            <FlatList
-                data={item.content.tracks}
-                renderItem={renderTrack}
-                keyExtractor={(track, index) => index.toString()}
-                contentContainerStyle={styles.trackList}
-            />
-            <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[0].bpm} à {item.content.header.tempos[0].ticks} ticks</Text>
-            <Text style={styles.trackText}>PPQ : {item.content.header.ppq}</Text>
-            <Text style={styles.trackText}>EoTT : {item.content.tracks[0].endOfTrackTicks}</Text>
             <TouchableOpacity style={styles.playButton} onPress={() => playChords(chords)}>
-                <Text style={styles.playButtonText}>Play</Text>
+                <Text style={styles.playButtonText}>Play {item.name}</Text>
             </TouchableOpacity>
+            <View style={styles.trackListContainer}>
+                <FlatList
+                    data={item.content.tracks}
+                    renderItem={renderTrack}
+                    keyExtractor={(track, index) => index.toString()}
+                    contentContainerStyle={styles.trackList}
+                />
+            </View>
+            {currentChord && (
+                <View style={styles.karaokeContainer}>
+                    <View style={styles.chordsContainer}>
+                        <Text style={styles.karaokeText}>{currentChord}</Text>
+                        {nextChord && (
+                            <Text style={styles.nextKaraokeText}>{nextChord}</Text>
+                        )}
+                    </View>
+                    <View style={styles.progressBarContainer}>
+                        <Animated.View style={[styles.progressBar, { width: progressBarWidth }]} />
+                    </View>
+                </View>
+            )}
         </View>
     );
 };
@@ -65,35 +88,69 @@ export default function SoundDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        flexDirection: 'column',
         backgroundColor: '#fff',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        textAlign: 'center',
-    },
-    trackList: {
-        flexGrow: 1,
-    },
-    trackRow: {
-        padding: 8,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    trackText: {
-        fontSize: 16,
-    },
     playButton: {
-        padding: 16,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#007BFF',
         borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 16,
+        margin: 10,
     },
     playButtonText: {
         color: '#fff',
         fontSize: 18,
+    },
+    trackListContainer: {
+        flex: 1,
+    },
+    trackList: {
+        flexGrow: 1,
+    },
+    karaokeContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '50%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 20,
+    },
+    chordsContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 20,
+    },
+    karaokeText: {
+        fontSize: 90,
+        fontWeight: 'bold',
+        color: '#007BFF',
+        marginBottom: '25%',
+    },
+    nextKaraokeText: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: '#007BFF',
+        opacity: 0.5,
+        position: 'absolute',
+        right: '20%',
+        bottom: 0,
+    },
+    progressBarContainer: {
+        width: '75%',
+        height: 10,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    progressBar: {
+        height: '100%',
+        backgroundColor: '#007BFF',
+        borderRadius: 5,
     },
 });

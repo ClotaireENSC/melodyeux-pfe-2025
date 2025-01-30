@@ -15,7 +15,7 @@ const speechTexts = {
         strict: 'Page des imports.',
     },
     SoundDetail: {
-        talkative: "Détails du son sélectionné. Appuyez sur le bas de l'écran pour lancer la transcription audio",
+        talkative: "Détails du son sélectionné. Appuyez sur le haut de l'écran pour lancer la transcription audio",
         strict: 'Détails du son.',
     },
 };
