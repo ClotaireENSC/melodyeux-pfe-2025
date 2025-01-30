@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Audio } from 'expo-av';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
-import { speak } from '../utils/speechHandler';
+import { sing, inform, stopTalking } from '../utils/speechHandler';
 
-export default function SoundDetailScreen({ route }) {
+export default function SoundDetailScreen({ route, navigation }) {
     const { item } = route.params;
 
-    // const playMidi = async (midiJson) => {
-    //     // Convert MIDI JSON to audio file (this step requires a server-side conversion or a different approach)
-    //     // For simplicity, let's assume you have a URL to an audio file
-    //     const audioUri = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-
-    //     const { sound } = await Audio.Sound.createAsync({ uri: audioUri });
-    //     await sound.playAsync();
-    // };
+    inform('SoundDetail', 'talkative');
 
     const playChords = (chords) => {
+        const bpm = Math.floor(item.content.header.tempos[0].bpm);
+        const beatsPerChord = chords.beatsPerChord;
+        const beatTime = 60 / bpm;
+        const chordTime = beatTime * beatsPerChord;
+        // play each chord
+        stopTalking();
         chords.chords.map(chord => {
-            speak(chord.chord);
+            sing(chord.chord, 1);
+            setTimeout(() => { }, chordTime * 1000);
         });
     };
 
@@ -30,13 +29,10 @@ export default function SoundDetailScreen({ route }) {
                 time: note?.time,
             };
         });
-        // console.log(notes);
 
         return (
             <View style={styles.trackRow}>
-                {/* <Text style={styles.trackText}>Track {index + 1}: {Object.keys(item.notes?.[0]).map(i => (i + ";"))}</Text> */}
                 <Text style={styles.trackText}>Track {index + 1}: {item.notes.map(note => (note?.name + ";"))}</Text>
-                {/* <Text style={styles.trackText}>Track {index + 1}: {item.notes.length} notes</Text> */}
             </View>
         );
     };
@@ -57,13 +53,8 @@ export default function SoundDetailScreen({ route }) {
                 contentContainerStyle={styles.trackList}
             />
             <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[0].bpm} à {item.content.header.tempos[0].ticks} ticks</Text>
-            <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[0].bpm} à {item.content.header.tempos[0].ticks} ticks</Text>
-            {/* <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[1].bpm} à {item.content.header.tempos[1].ticks} ticks</Text>
-            <Text style={styles.trackText}>Tempo (bpm): {item.content.header.tempos[2].bpm} à {item.content.header.tempos[2].ticks} ticks</Text> */}
             <Text style={styles.trackText}>PPQ : {item.content.header.ppq}</Text>
             <Text style={styles.trackText}>EoTT : {item.content.tracks[0].endOfTrackTicks}</Text>
-            {/* <Text style={styles.trackText}>EoTT : {item.content.tracks[1].endOfTrackTicks}</Text> */}
-            {/* <Text style={styles.trackText}>PPQ : {Object.keys(item.content.tracks[0].endOfTrackTicks).map(i => (i + ";"))}</Text> */}
             <TouchableOpacity style={styles.playButton} onPress={() => playChords(chords)}>
                 <Text style={styles.playButtonText}>Play</Text>
             </TouchableOpacity>
