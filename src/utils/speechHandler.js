@@ -32,7 +32,7 @@ const inform = (page, mode = 'talkative') => {
 
 const sing = (chord, chordTime) => {
     const parsedChord = parseChord(chord.chord);
-    const rate = Math.max(parsedChord["syllabes"] / 4 * chordTime, 1);
+    const rate = Math.max(parsedChord["syllabes"] / 16 * chordTime, 1);
 
     Speech.speak(parsedChord["text"], { rate: rate });
 };

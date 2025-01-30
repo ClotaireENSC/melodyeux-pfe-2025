@@ -29,7 +29,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-tts": "^4.1.1",
-    "tone": "^15.0.4"
+    "tone": "^15.0.4",
+    "expo-updates": "~0.26.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

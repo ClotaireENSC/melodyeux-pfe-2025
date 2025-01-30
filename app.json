@@ -26,6 +26,17 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "jsEngine": "hermes"
+    "jsEngine": "hermes",
+    "extra": {
+      "eas": {
+        "projectId": "8a930614-d783-46a2-84ce-935b93f360de"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8a930614-d783-46a2-84ce-935b93f360de"
+    }
   }
 }
