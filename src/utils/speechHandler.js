@@ -30,43 +30,50 @@ const inform = (page, mode = 'talkative') => {
     }
 };
 
-const sing = (chord, rate) => {
+const sing = (chord, chordTime) => {
     const parsedChord = parseChord(chord.chord);
-    Speech.speak(parsedChord, { pitch: chord.velocity, rate: rate });
+    const rate = Math.max(parsedChord["syllabes"] / 4 * chordTime, 1);
+
+    Speech.speak(parsedChord["text"], { rate: rate });
 };
 
 const parseChord = function (chord) {
-
     const matches = {
-        "C": "Do",
-        "D": "Ré",
-        "E": "Mi",
-        "F": "Fa",
-        "G": "Sol",
-        "A": "La",
-        "B": "Si",
-        "#": "dièse",
-        "min": "mineur",
-        "min7": "mineur 7",
-        "maj7": "majeur 7",
-        "7": "7",
-        "m7b5": "mineur 7 b5",
-        "dim7": "dim 7",
-        "sus4": "susse 4",
-        "6": "6",
-        "2": "2",
-        "silence": "silence"
+        "C": { text: "Do", syllabes: 1 },
+        "D": { text: "Ré", syllabes: 1 },
+        "E": { text: "Mi", syllabes: 1 },
+        "F": { text: "Fa", syllabes: 1 },
+        "G": { text: "Sol", syllabes: 1 },
+        "A": { text: "La", syllabes: 1 },
+        "B": { text: "Si", syllabes: 1 },
+        "#": { text: " dièse", syllabes: 2 },
+        "min": { text: " mineur", syllabes: 2 },
+        "min7": { text: " mineur 7", syllabes: 3 },
+        "maj7": { text: " majeur 7", syllabes: 3 },
+        "7": { text: " 7", syllabes: 1 },
+        "m7b5": { text: " mineur 7 bémol 5", syllabes: 6 },
+        "dim7": { text: " dim 7", syllabes: 2 },
+        "sus4": { text: " susse 4", syllabes: 2 },
+        "6": { text: " 6", syllabes: 1 },
+        "2": { text: " 2", syllabes: 1 },
+        "silence": { text: " silence", syllabes: 2 }
     };
 
     let pitch = '';
     let type = '';
+    let syllabes = 0;
 
     for (const [key, value] of Object.entries(matches)) {
         if (chord.includes(key)) {
-            if (['C', 'D', 'E', 'F', 'G', 'A', 'B', '#'].includes(key)) {
-                pitch = value; // Assign directly to avoid duplicates
+            if (['C', 'D', 'E', 'F', 'G', 'A', 'B'].includes(key)) {
+                pitch = value.text; // Assign directly to avoid duplicates
+                syllabes += value.syllabes;
+            } else if (key === '#') {
+                pitch += value.text; // Append to pitch for sharp notes
+                syllabes += value.syllabes;
             } else {
-                type = value; // Assign directly to avoid duplicates
+                type = value.text; // Assign directly to avoid duplicates
+                syllabes += value.syllabes;
             }
         }
     }
@@ -74,11 +81,10 @@ const parseChord = function (chord) {
     pitch = pitch.trim();
     type = type.trim();
 
-    const parsedChord = `${pitch} ${type}`.trim();
-
-    return parsedChord;
-}
-
+    const result = `${pitch}${type}`.trim();
+    console.log(result);
+    return { text: result, syllabes: syllabes };
+};
 
 const stopTalking = () => {
     Speech.stop();

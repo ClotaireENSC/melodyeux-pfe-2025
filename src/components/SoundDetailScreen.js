@@ -42,7 +42,7 @@ export default function SoundDetailScreen({ route, navigation }) {
 
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
-                sing(chord, 1 / chordTime);
+                sing(chord, chordTime);
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,
