@@ -37,6 +37,10 @@ const sing = (chord, chordTime) => {
     Speech.speak(parsedChord["text"], { rate: rate });
 };
 
+const say = (text, rate = 1) => {
+    Speech.speak(text, { rate: rate });
+}
+
 const parseChord = function (chord) {
     const matches = {
         "C": { text: "Do", syllabes: 1 },
@@ -93,3 +97,4 @@ const stopTalking = () => {
 export { inform };
 export { sing };
 export { stopTalking };
+export { say };

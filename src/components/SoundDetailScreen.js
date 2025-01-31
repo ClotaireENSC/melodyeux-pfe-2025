@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { Audio } from 'expo-av';
 import { getBatchesInfo } from '../utils/tracksManager';
 import { batchesToChords } from '../utils/batch_to_chord';
-import { sing, inform, stopTalking } from '../utils/speechHandler';
+import { sing, say, stopTalking } from '../utils/speechHandler';
 import { SpeechModeContext } from '../utils/SpeechModeContext';
 import { ListenMusicContext } from '../utils/ListenMusicContext';
 
@@ -14,18 +15,28 @@ export default function SoundDetailScreen({ route, navigation }) {
     const { speechMode } = useContext(SpeechModeContext);
     const { listenMusic, setListenMusic } = useContext(ListenMusicContext);
     const timeouts = useRef([]);
+    const metronomeSound = useRef(new Audio.Sound());
 
     useEffect(() => {
-        inform('SoundDetail', speechMode);
+        (async () => {
+            try {
+                await metronomeSound.current.loadAsync(require('../utils/metronome.mp3'));
+            } catch (error) {
+                console.error("Erreur chargement métronome:", error);
+            }
+        })();
+
+        //item name without .mid at the end
+        const item_name = item.name.slice(0, -4);
+        say(item_name + ". Appuyez sur le haut de l'écran pour lancer la transcription audio");
+
         return () => {
-            // Clear all timeouts
             timeouts.current.forEach(timeout => clearTimeout(timeout));
-            // Reset chords
             setCurrentChord(null);
             setNextChord(null);
-            // Stop any ongoing animations
             progress.stopAnimation();
             setListenMusic(true);
+            metronomeSound.current.unloadAsync();
         };
     }, [speechMode, listenMusic]);
 
@@ -34,15 +45,26 @@ export default function SoundDetailScreen({ route, navigation }) {
         const beatsPerChord = chords.beatsPerChord;
         const beatTime = 60 / bpm;
         const chordTime = beatTime * beatsPerChord;
+        const topSignature = item.content.header.timeSignatures[0].timeSignature[0];
         stopTalking();
 
         chords.chords.forEach((chord, index) => {
+            for (let i = 0; i < beatsPerChord; i++) {
+                const metronomeTimeout = setTimeout(async () => {
+                    try {
+                        await metronomeSound.current.replayAsync();
+                    } catch (error) {
+                        console.error("Erreur métronome:", error);
+                    }
+                }, (beatTime * 1000 * i) + (chordTime * 1000 * index));
+                timeouts.current.push(metronomeTimeout);
+            }
 
-            const timeout = setTimeout(() => {
-
+            const chordTimeout = setTimeout(() => {
                 setCurrentChord(chord.chord);
                 setNextChord(chords.chords[index + 1]?.chord || null);
                 sing(chord, chordTime);
+
                 Animated.timing(progress, {
                     toValue: 1,
                     duration: chordTime * 1000,
@@ -52,7 +74,7 @@ export default function SoundDetailScreen({ route, navigation }) {
                     progress.setValue(0);
                 });
             }, chordTime * 1000 * index);
-            timeouts.current.push(timeout);
+            timeouts.current.push(chordTimeout);
         });
 
         const finalTimeout = setTimeout(() => {
@@ -62,9 +84,7 @@ export default function SoundDetailScreen({ route, navigation }) {
         timeouts.current.push(finalTimeout);
     };
 
-    const renderTrack = function ({ item, index }) {
-        return null;
-    };
+    const renderTrack = () => null;
 
     const batches = getBatchesInfo(item);
     const chords = batchesToChords(batches.beats, batches.timeSignature[0].timeSignature);
@@ -102,12 +122,11 @@ export default function SoundDetailScreen({ route, navigation }) {
             )}
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
         backgroundColor: '#fff',
     },
     playButton: {

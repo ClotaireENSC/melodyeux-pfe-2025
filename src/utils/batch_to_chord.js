@@ -117,6 +117,9 @@ function getBeatsPerChord(timeSignature) {
         case '2/4':
             beatsPerChord = 1;
             break;
+        case '3/4':
+            beatsPerChord = 3;
+            break;
         case '4/4':
             beatsPerChord = 2;
             break;
